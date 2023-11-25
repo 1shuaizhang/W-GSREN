@@ -179,21 +179,6 @@ def group_square_root_EN(X, y, groups, lambd1, lambd2, W_g,W_i,max_iter=1000, to
 n = 10   #表示5折
 m = len(x_pos)//n
 
-lambda1 = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,
-           0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,0.0001,0.0002,0.0003,0.0004,
-           0.0005,0.0006,0.0007,0.0008]
-lambda1 = [0.061,0.062,0.063,0.064,0.065,0.066,0.067,0.068,0.069,0.07,0.071,0.072,0.073,
-           0.074,0.075,0.076,0.077,0.078,0.079,0.08,0.081,0.082,0.083,0.084,0.085,0.086,
-           0.087,0.088,0.089,0.09,0.091,0.092,0.093,0.094,0.095,0.096,0.097,0.098,0.1]
-lambda1 = [0.001,0.0015,0.002,0.0025,0.003,0.0035,0.004,0.0045,0.005,0.0055,0.006,0.0065,0.007,0.0075,0.0080,0.085,0.009,0.0095]
-lambda1 = [0.061,0.062,0.063,0.064,0.065,0.066,0.067,0.068,0.069,0.07,0.071,
-           0.072,0.073,0.074,0.075,0.076,0.077,0.078,0.079,0.08,0.081,0.082,
-           0.083,0.084,0.085,0.086,0.087,0.088,0.089]
-lambda2 = [200] *18
-
-lambda1 = np.logspace(-3, -2, 30)
-lambda2 = np.full(30,200)
-
 lambda1 = [0.001]
 lambda2 = [200]
 a_l = []
@@ -257,24 +242,6 @@ for i in a_l:
     auc_score = roc_auc_score(Y_test, predict)
     a_l2.append([i[0],i[1],auc_score,acc_score])
 
-
-a3 = a1[0]
-beta0 = a3[0]
-beta1 = a3[1]
-beta2 = a3[2]
-beta3 = a3[3]
-beta4 = a3[4]
-
-index0 = select_fea(beta0)
-index1 = select_fea(beta1)
-index2 = select_fea(beta2)
-index3 = select_fea(beta3)
-index4 = select_fea(beta4)
-
-K = np.linalg.norm(X_train) / math.sqrt(2)
-X = X_train / K
-y = Y_train / K
-
 mybeta = group_square_root_EN(X, y, groups, 0.001,200, W_g, W_i, max_iter=1000, tol=1e-3)
 
 a = mybeta
@@ -282,7 +249,4 @@ index = select_fea(a)
 s, gene_select = Extract(100, a)
 
 
-predict = calc_prob( X_test, mybeta)
-y_pred = pred(predict)
-acc_score = metrics.accuracy_score(Y_test,y_pred)
-auc_score = roc_auc_score(Y_test, predict) 
+
