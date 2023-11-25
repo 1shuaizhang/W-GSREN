@@ -24,7 +24,7 @@ from _subsampling import Subsampler
 from _group_lasso import GroupLasso
 
 def read_THCA():
-    data = pd.read_csv('C:/Users/Administrator/Desktop/THCA/THCA/THCA.csv', sep=",", index_col=0)
+    data = pd.read_csv('THCA.csv', sep=",", index_col=0)
     gene_name = data.index.tolist()
     data_scaler = preprocessing.scale(np.array(data).T) #标准化后的数据
     y = np.hstack((np.ones(70),np.zeros(58))) #50个正样本，41个负样本
@@ -43,12 +43,12 @@ def read_THCA():
     np.random.seed(1)
     np.random.shuffle(x_neg)
     
-    W_i = pd.read_csv('C:/Users/Administrator/Desktop/THCA/THCA/THCA_W.csv', sep=",", index_col=0)
+    W_i = pd.read_csv('THCA_W.csv', sep=",", index_col=0)
     W_i = W_i['P'].tolist()
     W_i = np.diag(W_i)
     
     
-    set_size = pd.read_csv("C:/Users/Administrator/Desktop/THCA/THCA/THCA_group.csv",sep = ",") 
+    set_size = pd.read_csv("THCA_group.csv",sep = ",") 
     s = set_size['number of gene'].tolist()
     g = set_size['cor'].tolist()
     W_g = []
@@ -176,24 +176,8 @@ def group_square_root_EN(X, y, groups, lambd1, lambd2, W_g,W_i,max_iter=1000, to
 n = 10     #表示5折
 m = len(x_pos)//n
 
-lambda1 = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,
-           0.001,0.002,0.003,0.004,0.005,0.006,0.007,0.008,0.009,0.0001,0.0002,0.0003,0.0004,
-           0.0005,0.0006,0.0007,0.0008]
-lambda1 = [0.061,0.062,0.063,0.064,0.065,0.066,0.067,0.068,0.069,0.07,0.071,0.072,0.073,
-           0.074,0.075,0.076,0.077,0.078,0.079,0.08,0.081,0.082,0.083,0.084,0.085,0.086,
-           0.087,0.088,0.089,0.09,0.091,0.092,0.093,0.094,0.095,0.096,0.097,0.098,0.1]
-lambda1 = [0.001,0.0015,0.002,0.0025,0.003,0.0035,0.004,0.0045,0.005,0.0055,0.006,0.0065,0.007,0.0075,0.0080,0.085,0.009,0.0095]
-lambda1 = [0.061,0.062,0.063,0.064,0.065,0.066,0.067,0.068,0.069,0.07,0.071,
-           0.072,0.073,0.074,0.075,0.076,0.077,0.078,0.079,0.08,0.081,0.082,
-           0.083,0.084,0.085,0.086,0.087,0.088,0.089]
-lambda2 = [200] *18
-
-lambd1 = [0.001]
-lambd2 = [500]
-
 lambda1 = np.logspace(-4, -2, 30)
 lambda2 = np.full(30,510)
-
 
 a_l = []
 for i in range(len(lambda1)):
@@ -239,9 +223,6 @@ def calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups):
 C_M,A_L = calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups)
 a1,a2, = C_M,A_L
 
-
-
-
 K = np.linalg.norm(X_train) / math.sqrt(2)
 X = X_train / K
 y = Y_train / K
@@ -257,15 +238,6 @@ for i in a_l:
     auc_score = roc_auc_score(Y_test, predict)
     a_l2.append([i[0],i[1],auc_score,acc_score])
     
-
-lambda1 = np.logspace(-4, -2, 30)
-lambda2 = np.full(30,510)
-
-
-a_l = []
-for i in range(len(lambda1)):
-    a_l.append([lambda1[i],lambda2[i]])
-
 a_l2 = []
 for i in a_l:
     ab = group_square_root_EN(X, y, groups,  i[0], i[1], W_g, W_i, max_iter=1000, tol=1e-3)
@@ -285,7 +257,4 @@ index = select_fea(a)
 s, gene_select = Extract(100, a)
 
 
-predict = calc_prob( X_test, mybeta)
-y_pred = pred(predict)
-acc_score = metrics.accuracy_score(Y_test,y_pred)
-auc_score = roc_auc_score(Y_test, predict) 
+
