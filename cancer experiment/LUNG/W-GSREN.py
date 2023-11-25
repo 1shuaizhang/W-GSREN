@@ -245,19 +245,9 @@ for i in a_l:
     auc_score = roc_auc_score(Y_test, predict)
     a_l2.append([i[0],i[1],auc_score,acc_score])
 
-gl = GroupLasso(groups=groups,group_reg=0.00000001,l1_reg=0.001,frobenius_lipschitz=True,scale_reg="none",
-                subsampling_scheme=None,supress_warning=True,n_iter=1000,tol=1e-3,)
-gl.fit(X_train, Y_train)
-coefs_train = gl.coef_
-
 mybeta = group_square_root_EN(X, y, groups, 4.893900918477499e-06,900, W_i, W_g, max_iter=5000, tol=1e-3)  #, W_g
-
 a = mybeta
 index = select_fea(a)
 
 
 
-predict = calc_prob( X_test, mybeta)
-y_pred = pred(predict)
-acc_score = metrics.accuracy_score(Y_test,y_pred)
-auc_score = roc_auc_score(Y_test, predict) 
