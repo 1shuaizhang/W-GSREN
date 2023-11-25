@@ -24,7 +24,7 @@ from _subsampling import Subsampler
 from _group_lasso import GroupLasso
 
 def read_LIHC():
-    data = pd.read_csv("F:/张帅代码/LIHC/LIHC.csv", sep=",", index_col=0)
+    data = pd.read_csv("LIHC.csv", sep=",", index_col=0)
     data = data.T
     gene_name = data.index.tolist()
     data_scaler = preprocessing.scale(np.array(data).T) #标准化后的数据
@@ -44,12 +44,12 @@ def read_LIHC():
     np.random.seed(1)
     np.random.shuffle(x_neg)
     
-    W_i = pd.read_csv('F:/张帅代码/LIHC/LIHC_W.csv', sep=",", index_col=0)
+    W_i = pd.read_csv('LIHC_W.csv', sep=",", index_col=0)
     W_i = W_i['P'].tolist()
     W_i = np.diag(W_i)
     
     
-    set_size = pd.read_csv("F:/张帅代码/LIHC/LIHC_group.csv",sep = ",") 
+    set_size = pd.read_csv("LIHC_group.csv",sep = ",") 
     s = set_size['number of gene'].tolist()
     g = set_size['cor'].tolist()
     W_g = []
