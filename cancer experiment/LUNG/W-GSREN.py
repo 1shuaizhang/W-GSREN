@@ -25,7 +25,7 @@ from _group_lasso import GroupLasso
 
 
 def read_Lung():    
-    data = pd.read_csv('F:/张帅代码/LUNG/LUNG2.csv', sep=",", index_col=0) 
+    data = pd.read_csv('LUNG.csv', sep=",", index_col=0) 
     gene_name = data.index.tolist()
     data_scaler = preprocessing.scale(np.array(data).T) #标准化后的数据
     y = np.hstack((np.ones(500),np.zeros(500))) 
@@ -44,11 +44,11 @@ def read_Lung():
     np.random.seed(1) #2
     np.random.shuffle(x_neg)
     
-    W_i = pd.read_csv('F:/张帅代码/LUNG/LUNG_W2.csv', sep=",", index_col=0)
+    W_i = pd.read_csv('LUNG_W.csv', sep=",", index_col=0)
     W_i = W_i['P'].tolist()
     W_i = np.diag(W_i)
 
-    set_size = pd.read_csv("F:/张帅代码/LUNG/LUNG_group2.csv",sep = ",") 
+    set_size = pd.read_csv("LUNG_group.csv",sep = ",") 
     s = set_size['number of gene'].tolist()
     g = set_size['cor'].tolist()
     W_g = []
