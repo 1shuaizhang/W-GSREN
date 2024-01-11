@@ -60,9 +60,6 @@ def read_Lung():
         W_g.append(ab)
     return X_train,x_pos, x_neg, X_test, Y_train,Y_test, groups,gene_name,W_i,W_g 
 
-X_train,x_pos, x_neg, X_test, Y_train,Y_test, groups,gene_name,W_i,W_g  = read_Lung()
-
-
 
 def soft_threshold(x, gamma):
     return np.sign(x) * np.maximum(np.abs(x) - gamma, 0)
@@ -177,17 +174,6 @@ def group_square_root_EN(X, y, groups, lambd1, lambd2,W_i,W_g,max_iter=1000, tol
     print('Took %f s' % (end_time - start_time))
     return beta
 
-
-n = 10  #表示5折
-m = len(x_pos)//n
-
-
-lambda1 = np.logspace(-6, -4, 30)
-lambda2 = np.full(30,900)
-
-a_l = []
-for i in range(len(lambda1)):
-    a_l.append([lambda1[i],lambda2[i]])
     
 def calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups):
     alpha_lambd = []
@@ -226,28 +212,37 @@ def calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups):
         Coef_modle.append(coef_val)  #选出平均acc最高的lambda对应的结果
         alpha_lambd.append([lambd1, perfor_auc[0][2], perfor_auc[0][0],perfor_auc[0][1]]) 
     return Coef_modle,alpha_lambd
-C_M,A_L = calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups)
-a1,a2, = C_M,A_L
+
+if __name__ == "__main__":
+    X_train,x_pos, x_neg, X_test, Y_train,Y_test, groups,gene_name,W_i,W_g  = read_Lung()
+    n = 10   #表示10折
+    m = len(x_pos)//n
+
+    lambda1 = np.logspace(-6, -4, 30)
+    lambda2 = np.full(30,900)
+    a_l = []
+    for i in range(len(lambda1)):
+        a_l.append([lambda1[i],lambda2[i]])
+    C_M,A_L = calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups)
+    a_l2 = []
+    for i in a_l:
+        ab = group_square_root_EN(X, y, groups,  i[0], i[1], W_g, W_i, max_iter=1000, tol=1e-3)
+
+        index = select_fea(ab)
+        predict = calc_prob( X_test, ab)
+        y_pred = pred(predict)
+        acc_score = metrics.accuracy_score(Y_test,y_pred)
+        auc_score = roc_auc_score(Y_test, predict)
+        a_l2.append([i[0],i[1],auc_score,acc_score])
+    mybeta = group_square_root_EN(X, y, groups, 0.001,200, W_g, W_i, max_iter=1000, tol=1e-3)
+
+    a = mybeta
+    index = select_fea(a)
+    s, gene_select = Extract(100, a)
 
 
-K = np.linalg.norm(X_train) / math.sqrt(2)
-X = X_train / K
-y = Y_train / K
 
-a_l2 = []
-for i in a_l:
-    ab = group_square_root_EN(X, y, groups,  i[0], i[1], W_i,W_g, max_iter=1000, tol=1e-3)
 
-    index = select_fea(ab)
-    predict = calc_prob( X_test, ab)
-    y_pred = pred(predict)
-    acc_score = metrics.accuracy_score(Y_test,y_pred)
-    auc_score = roc_auc_score(Y_test, predict)
-    a_l2.append([i[0],i[1],auc_score,acc_score])
-
-mybeta = group_square_root_EN(X, y, groups, 4.893900918477499e-06,900, W_i, W_g, max_iter=5000, tol=1e-3)  #, W_g
-a = mybeta
-index = select_fea(a)
 
 
 
