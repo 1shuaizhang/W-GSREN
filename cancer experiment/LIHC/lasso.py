@@ -88,15 +88,6 @@ def read_LIHC():
         W_g.append(ab)
     return X_train,x_pos, x_neg, X_test, Y_train,Y_test, groups,gene_name,W_g,W_i
 
-X_train,x_pos,x_neg, X_test,Y_train,Y_test, groups,gene_name,W_g,W_i = read_LIHC()
-
-
-
-n = 10     #表示5折
-m = len(x_pos)//n
-a_l = [0.001,0.002, 0.003,0.004,0.005,0.006,0.007,0.008,0.009,0.01,0.02,0.03,0.04,0.05,
-       0.06,0.07,0.08,0.09,0.1, 0.2, 0.3, 0.4, 0.5]
-
 #lasso五倍交叉验证
 def calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups):
     alpha_lambd = []
@@ -135,46 +126,3 @@ def calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups):
         Coef_modle.append(coef_val)  #选出平均acc最高的lambda对应的结果
         alpha_lambd.append([lambd,  perfor_auc[0][0],perfor_auc[0][1]]) 
     return Coef_modle,alpha_lambd
-C_M,A_L = calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups)
-
-a,a1 = C_M,A_L
-
-a_l2 = []
-for i in range(len(a_l)):
-    clf = linear_model.Lasso(alpha=a_l[i])
-    abc = clf.fit(X_train, Y_train)
-    coefs_train = abc.coef_
-
-    ab = coefs_train
-    index = select_fea(ab)
-    predict = calc_prob( X_test, coefs_train)
-    y_pred = pred(predict)
-    acc_score = metrics.accuracy_score(Y_test,y_pred)
-    auc_score = roc_auc_score(Y_test, predict)
-    a_l2.append([a_l[i],auc_score,acc_score])
-
-a2 = a[13]
-beta0 = a2[0]
-beta1 = a2[1]
-beta2 = a2[2]
-beta3 = a2[3]
-beta4 = a2[4]
-
-index0 = select_fea(beta0)
-index1 = select_fea(beta1)
-index2 = select_fea(beta2)
-index3 = select_fea(beta3)
-index4 = select_fea(beta4)
-
-clf = linear_model.Lasso(alpha=0.01)
-abc = clf.fit(X_train, Y_train)
-coefs_train = abc.coef_
-
-ab = coefs_train
-index = select_fea(ab)
-s, gene_select = Extract(100, ab)
-
-predict = calc_prob( X_test, coefs_train)
-y_pred = pred(predict)
-acc_score = metrics.accuracy_score(Y_test,y_pred)
-auc_score = roc_auc_score(Y_test, predict)
