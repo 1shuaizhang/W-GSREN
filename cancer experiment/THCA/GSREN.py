@@ -53,7 +53,6 @@ def read_THCA():
         groups += a
         W_g.append(ab)
     return X_train,x_pos, x_neg, X_test, Y_train,Y_test, groups,gene_name,W_g,W_i
-X_train,x_pos,x_neg, X_test,Y_train,Y_test, groups,gene_name,W_g,W_i = read_THCA()
 
 def soft_threshold(x, gamma):
     return np.sign(x) * np.maximum(np.abs(x) - gamma, 0)
@@ -163,32 +162,7 @@ def group_square_root_EN(X, y, groups, lambd1, lambd2, max_iter=1000, tol=1e-3):
     end_time = time.time()  # 记录程序结束运行时间
     print('Took %f second' % (end_time - start_time))
     return beta
-
-
-n = 10    #表示5折
-m = len(x_pos)//n
-
-lambda1 = [0.09,0.095,0.001,0.0015,0.002,0.0025,0.003,0.0035,0.004,0.0045,0.09,0.095,0.001,0.0015,0.002,0.0025,0.003,0.0035,0.004,0.0045,
-                0.09,0.095,0.001,0.0015,0.002,0.0025,0.003,0.0035,0.004,0.0045]
-lambda2 = [0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.002,0.003,0.003,
-                 0.003,0.003,0.003,0.003,0.003,0.003,0.003,0.003]
-lambda1 = [0.0015,0.0016,0.0017,0.0018,0.0019,0.002,0.0021,0.0022,0.0023,0.0024,0.0025,0.0026,0.0027,
-           0.0028,0.0029,0.003,0.0031,0.0032,0.0033,0.0034,0.0035]
-lambda2 = [0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,
-           0.001,0.001,0.001,0.001,0.001,0.001]
-
-lambda1 = np.logspace(-4.1, -3, 60)
-lambda2 = np.full(60,0.01)
-
-lambda1 = [0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.001,0.002,0.003,0.004,0.005,0.006,0.007,
-           0.008,0.009,0.0001,0.0002,0.0003,0.0004,0.0005,0.0006,0.0007,0.0008]
-lambda2 = [0.001] *26
-
-a_l = []
-for i in range(len(lambda1)):
-    a_l.append([lambda1[i],lambda2[i]])
-    
-  
+ 
 def calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups):
     alpha_lambd = []
     Coef_modle = []
@@ -226,39 +200,4 @@ def calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups):
         Coef_modle.append(coef_val)  #选出平均acc最高的lambda对应的结果
         alpha_lambd.append([lambd1, perfor_auc[0][2], perfor_auc[0][0],perfor_auc[0][1]]) 
     return Coef_modle,alpha_lambd
-C_M,A_L = calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups)
-a,a1, = C_M,A_L
-
-
-
-K = np.linalg.norm(X_train) / math.sqrt(2)
-X = X_train / K
-y = Y_train / K
-
-a_l2 = []
-for i in a_l:
-    ab = group_square_root_EN(X, y, groups, i[0], i[1], max_iter=1000, tol=1e-3)
-
-    index = select_fea(ab)
-    predict = calc_prob( X_test, ab)
-    y_pred = pred(predict)
-    acc_score = metrics.accuracy_score(Y_test,y_pred)
-    auc_score = roc_auc_score(Y_test, predict)
-    a_l2.append([i[0],i[1],auc_score,acc_score])
-    
-    
-
-
-
-
-mybeta = group_square_root_EN(X, y, groups, 0.00016479694349831462, 0.01, max_iter=10000, tol=1e-3)
-
-a = mybeta
-index = select_fea(a)
-s, gene_select = Extract(100, ab)
-
-predict = calc_prob( X_test, mybeta)
-y_pred = pred(predict)
-acc_score = metrics.accuracy_score(Y_test,y_pred)
-auc_score = roc_auc_score(Y_test, predict) 
 
