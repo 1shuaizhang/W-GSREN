@@ -214,7 +214,7 @@ def calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups):
 
 if __name__ == "__main__":
     X_train,x_pos,x_neg, X_test,Y_train,Y_test, groups,gene_name,W_g,W_i = read_LIHC()
-    n = 10   #表示5折
+    n = 10   #表示10折
     m = len(x_pos)//n
 
     lambda1 = [0.001]
