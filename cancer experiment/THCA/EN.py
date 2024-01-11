@@ -80,15 +80,7 @@ def read_THCA():
         groups += a
         W_g.append(ab)
     return X_train,x_pos, x_neg, X_test, Y_train,Y_test, groups,gene_name,W_g,W_i
-X_train,x_pos,x_neg, X_test,Y_train,Y_test, groups,gene_name,W_g,W_i = read_THCA()
-
-n = 10   #表示5折
-m = len(x_pos)//n
-alpha  = np.logspace(-4, -1, 60)
-lambda1 = np.full(60,4)
-a_l = []
-for i in range(len(alpha)):
-    a_l.append([alpha[i],lambda1[i]])   
+   
     
 def calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups):
     alpha_lambd = []
@@ -132,40 +124,7 @@ def calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups):
         alpha_lambd.append([lambd1, perfor_auc[0][2], perfor_auc[0][0],perfor_auc[0][1]]) 
     return Coef_modle,alpha_lambd
 
-C_M,A_L = calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups)
 
-a,a1 = C_M,A_L
-
-a_l2 = []
-for i in a_l:
-    reg = ElasticNet(i[1],i[0], fit_intercept=False)
-    reg.fit(X_train, Y_train)
-    coefs_train = reg.coef_
-
-    ab = coefs_train
-    index = select_fea(ab)
-    predict = calc_prob( X_test, coefs_train)
-    y_pred = pred(predict)
-    acc_score = metrics.accuracy_score(Y_test,y_pred)
-    auc_score = roc_auc_score(Y_test, predict)
-    a_l2.append([i[0],i[1],auc_score,acc_score])
-
-
-# 初始化弹性网络回归器
-reg = ElasticNet(alpha=4, l1_ratio=0.02758531617629184, fit_intercept=False)
-# 拟合线性模型
-reg.fit(X_train, Y_train)
-# 权重系数
-w = reg.coef_
-
-a = w
-index = select_fea(a)
-s, gene_select = Extract(100, a)
-
-predict = calc_prob( X_test, w )
-y_pred = pred(predict)
-acc_score = metrics.accuracy_score(Y_test,y_pred)
-auc_score = roc_auc_score(Y_test, predict)
 
 
 
