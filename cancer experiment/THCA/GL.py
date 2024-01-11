@@ -91,13 +91,9 @@ def read_THCA():
         groups += a
         W_g.append(ab)
     return X_train,x_pos, x_neg, X_test, Y_train,Y_test, groups,gene_name,W_g,W_i
-X_train,x_pos,x_neg, X_test,Y_train,Y_test, groups,gene_name,W_g,W_i = read_THCA()
 
-n = 10   #表示5折
-m = len(x_pos)//n
-a_l = [0.01,0.02, 0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1, 0.2, 0.3, 0.4, 0.5]
 
-#group lasso五倍交叉验证
+#group lasso 10倍交叉验证
 def calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups):
     alpha_lambd = []
     Coef_modle = []
@@ -138,39 +134,3 @@ def calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups):
         alpha_lambd.append([lambd,  perfor_auc[0][0],perfor_auc[0][1]])
     
     return Coef_modle,alpha_lambd
-C_M,A_L = calc_lambd(x_pos,x_neg,Y_train,m,n,a_l,groups)
-
-a,a1 = C_M,A_L
-
-
-
-a_l2 = []
-for i in range(len(a_l)):
-    gl = GroupLasso(groups=groups,group_reg=a_l[i],l1_reg=0,frobenius_lipschitz=True,scale_reg="none",
-                subsampling_scheme=None,supress_warning=True,n_iter=1000,tol=1e-3,)
-    gl.fit(X_train, Y_train)
-    coefs_train = gl.coef_
-
-
-    ab = coefs_train
-    index = select_fea(ab)
-    predict = calc_prob( X_test, coefs_train)
-    y_pred = pred(predict)
-    acc_score = metrics.accuracy_score(Y_test,y_pred)
-    auc_score = roc_auc_score(Y_test, predict)
-    a_l2.append([a_l[i],auc_score,acc_score])
-
-
-gl = GroupLasso(groups=groups,group_reg=0.1,l1_reg=0,frobenius_lipschitz=True,scale_reg="none",
-                subsampling_scheme=None,supress_warning=True,n_iter=1000,tol=1e-3,)
-gl.fit(X_train, Y_train)
-coefs_train = gl.coef_
-
-ab = coefs_train
-index = select_fea(ab)
-s, gene_select = Extract(100, ab)
-
-predict = calc_prob( X_test, coefs_train)
-y_pred = pred(predict)
-acc_score = metrics.accuracy_score(Y_test,y_pred)
-auc_score = roc_auc_score(Y_test, predict)
